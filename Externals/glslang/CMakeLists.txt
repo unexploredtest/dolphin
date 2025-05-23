@@ -18,3 +18,26 @@ if (TARGET glslang)
     "${CMAKE_CURRENT_SOURCE_DIR}"
   )
 endif()
+<<<<<<< HEAD
+=======
+
+if(NOT MSVC)
+# glslang requires C++11 at a minimum to compile.
+add_compile_options(-std=c++11)
+
+# Silence some warnings that occur frequently to reduce noise in build logs.
+add_compile_options(-Wno-shadow)
+add_compile_options(-Wno-reorder)
+add_compile_options(-Wno-sign-compare)
+add_compile_options(-Wno-parentheses)
+add_compile_options(-Wno-unused-variable)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	add_compile_options(-Wno-unused-but-set-variable)
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	add_compile_options(-Wno-missing-variable-declarations)
+endif()
+endif()
+
+add_library(glslang STATIC ${SRCS})
+dolphin_disable_warnings(glslang)
+>>>>>>> b61a398e18 (Use CMAKE_CURRENT_SOURCE_DIR instead of CMAKE_SOURCE_DIR)
