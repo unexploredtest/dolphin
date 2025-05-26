@@ -622,11 +622,17 @@ dolphin_find_optional_system_library_pkgconfig(FMT
   fmt>=10.1 fmt::fmt Externals/fmt
 )
 
+<<<<<<< HEAD
 dolphin_add_bundled_library(ImGui Externals/imgui)
 dolphin_add_bundled_library(ImPlot Externals/implot)
 
 dolphin_find_optional_system_library(glslang Externals/glslang DOLPHIN_TRY_VERSIONS 15 16)
 
+=======
+add_subdirectory(Externals/imgui)
+add_subdirectory(Externals/implot)
+add_subdirectory(Externals/glslang)
+>>>>>>> 6c98e7b538 (Move glslang target_include_directories back to glslang's CMakeLists.txt)
 # SPIRV-Cross is used on Windows for GLSL to HLSL conversion for the Direct3D 11 and Direct3D 12
 # video backends, and on Apple devices for the Metal video backend.
 if(WIN32 OR APPLE)
