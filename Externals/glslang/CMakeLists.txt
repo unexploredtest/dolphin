@@ -18,8 +18,6 @@ if (TARGET glslang)
     "${CMAKE_CURRENT_SOURCE_DIR}"
   )
 endif()
-<<<<<<< HEAD
-=======
 
 if(NOT MSVC)
 # glslang requires C++11 at a minimum to compile.
@@ -40,4 +38,5 @@ endif()
 
 add_library(glslang STATIC ${SRCS})
 dolphin_disable_warnings(glslang)
+<<<<<<< HEAD
 >>>>>>> b61a398e18 (Use CMAKE_CURRENT_SOURCE_DIR instead of CMAKE_SOURCE_DIR)
