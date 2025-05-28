@@ -70,7 +70,7 @@ if (APPLE AND ENABLE_QT)
     if (MACOS_CODE_SIGNING)
       add_custom_command(TARGET build_final_bundle
         POST_BUILD
-        COMMAND "${CMAKE_SOURCE_DIR}/Tools/mac-codesign.sh"
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../../Tools/mac-codesign.sh"
         "-t"
         "${MACOS_CODE_SIGNING_IDENTITY}"
         "${DOLPHIN_MAC_BUNDLE}/Contents/Helpers/Dolphin Updater.app")
@@ -80,9 +80,9 @@ if (APPLE AND ENABLE_QT)
   if (MACOS_CODE_SIGNING)
     add_custom_command(TARGET build_final_bundle
       POST_BUILD
-      COMMAND "${CMAKE_SOURCE_DIR}/Tools/mac-codesign.sh"
+      COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../../Tools/mac-codesign.sh"
       "-t"
-      "-e" "${CMAKE_SOURCE_DIR}/Source/Core/DolphinQt/DolphinEmu$<$<CONFIG:Debug>:Debug>.entitlements"
+      "-e" "${CMAKE_CURRENT_SOURCE_DIR}/../../Source/Core/DolphinQt/DolphinEmu$<$<CONFIG:Debug>:Debug>.entitlements"
       "${MACOS_CODE_SIGNING_IDENTITY}"
       "${DOLPHIN_MAC_BUNDLE}")
   endif()
