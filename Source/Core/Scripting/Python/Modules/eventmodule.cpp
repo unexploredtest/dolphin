@@ -20,6 +20,11 @@
 #include "Scripting/Python/Utils/object_wrapper.h"
 #include "Scripting/Python/PyScriptingBackend.h"
 
+#include <iostream>
+#include <mutex>
+
+
+
 namespace PyScripting
 {
 
@@ -85,7 +90,7 @@ struct EventState
 template <typename... TsEvents>
 struct GenericEventModuleState
 {
-  API::EventHub* event_hub;
+  // API::EventHub* event_hub;
   std::tuple<EventState<TsEvents>...> event_state;
 
   void Reset()
@@ -94,7 +99,7 @@ struct GenericEventModuleState
         [&](auto&&... s) {
           (([&]() {
              for (auto listener_id : s.m_active_listener_ids)
-               event_hub->UnlistenEvent(listener_id);
+               API::GetEventHub().UnlistenEvent(listener_id);
              s.m_active_listener_ids.clear();
            }()),
            ...);
@@ -115,6 +120,9 @@ struct GenericEventModuleState
 using EventModuleState = GenericEventModuleState<
   API::Events::FrameAdvance, API::Events::MemoryBreakpoint, API::Events::CodeBreakpoint, API::Events::FrameDrawn>;
 
+static EventModuleState eventState;
+static std::mutex m_call_lock{};
+
 // These template shenanigans are all required for PyEventFromMappingFunc
 // to be able to infer all of the mapping function signature's parts
 // from the mapping function only.
@@ -133,6 +141,7 @@ struct PyEvent<MappingFunc<TEvent, TsArgs...>, TFunc>
 {
   static PyObject* AddCallback(PyObject* module, PyObject* newCallback)
   {
+    // std::lock_guard lock{m_call_lock};
     if (newCallback == Py_None)
     {
       PyErr_SetString(PyExc_ValueError, "event callback must not be None");
@@ -143,12 +152,13 @@ struct PyEvent<MappingFunc<TEvent, TsArgs...>, TFunc>
       PyErr_SetString(PyExc_TypeError, "event callback must be callable");
       return nullptr;
     }
-    EventModuleState* state = Py::GetState<EventModuleState>(module);
+    EventModuleState* state = &eventState;
     PyInterpreterState* interpreter_state = PyThreadState_Get()->interp;
     Py_INCREF(module);       // TODO felk: where DECREF?
     Py_INCREF(newCallback);  // TODO felk: where DECREF?
 
     auto listener = [=](const TEvent& event) {
+      // std::lock_guard lock{m_call_lock};
       // TODO felk: Creating a new thread state for each event is unnecessary overhead.
       // Since all events of the same type happen inside the same thread anyway, it would be safe to create it once and then reuse it
       // (using PyEval_RestoreThread and PyEval_SaveThread). We can't use the thread state from outside the lambda
@@ -176,17 +186,80 @@ struct PyEvent<MappingFunc<TEvent, TsArgs...>, TFunc>
       PyThreadState_Clear(thread_state);
       PyThreadState_DeleteCurrent();
     };
-    auto listener_id = state->event_hub->ListenEvent<TEvent>(listener);
-    state->NoteActiveListenerID<TEvent>(listener_id);
+    auto listener_id = API::GetEventHub().ListenEvent<TEvent>(listener);
+    eventState.NoteActiveListenerID<TEvent>(listener_id);
     // TODO felk: handle in python somehow, currently impossible to unsubscribe.
     // TODO felk: documentation is currently wrong: it says only one can be registered (wrong) and you may register "None" to unregister (wrong)
     // TODO felk: where state->ForgetActiveListenerID(listener_id)?
     return Py_BuildValue("i", listener_id.value);
   }
+  static PyObject* AddSingleUseCallback(PyObject* module, PyObject* newCallback)
+  {
+    if (newCallback == Py_None)
+    {
+      PyErr_SetString(PyExc_ValueError, "event callback must not be None");
+      return nullptr;
+    }
+    if (!PyCallable_Check(newCallback))
+    {
+      PyErr_SetString(PyExc_TypeError, "event callback must be callable");
+      return nullptr;
+    }
+    EventModuleState* state = &eventState;
+    PyInterpreterState* interpreter_state = PyThreadState_Get()->interp;
+    Py_INCREF(module);       // TODO felk: where DECREF?
+    Py_INCREF(newCallback);  // TODO felk: where DECREF?
+
+    auto listener_id = std::make_shared<API::ListenerID<TEvent>>();
+    auto listener = [=](const TEvent& event) mutable {
+      // TODO felk: Creating a new thread state for each event is unnecessary overhead.
+      // Since all events of the same type happen inside the same thread anyway, it would be safe to create it once and then reuse it
+      // (using PyEval_RestoreThread and PyEval_SaveThread). We can't use the thread state from outside the lambda
+      // (PyThreadState_Get()), because the listeners (may) get registered from a different thread,
+      // and a python thread state is only valid in the OS thread it was created in.
+      PyThreadState* thread_state = PyThreadState_New(interpreter_state);
+      PyEval_RestoreThread(thread_state);
+
+      const std::tuple<TsArgs...> args = TFunc(event);
+      PyObject* result =
+          std::apply([&](auto&&... arg) { return Py::CallFunction(newCallback, arg...); }, args);
+      if (result == nullptr)
+      {
+        PyErr_Print();
+      }
+      else
+      {
+        if (PyCoro_CheckExact(result))
+          HandleNewCoroutine(module, result);
+        // TODO felk: else?
+      }
+
+      DecrefPyObjectsInArgs(args);
+      // Py_DECREF(module);
+
+      PyThreadState_Clear(thread_state);
+      PyThreadState_DeleteCurrent();
+
+      API::GetEventHub().UnlistenEvent(*listener_id);
+      eventState.ForgetActiveListenerID<TEvent>(*listener_id);
+
+      // Core::getMuler().lock();
+      // Core::getMuler().unlock();
+    };
+    // Core::getMuler().lock();
+    *listener_id = API::GetEventHub().ListenEvent<TEvent>(listener);
+    eventState.NoteActiveListenerID<TEvent>(*listener_id);
+    // Core::getMuler().unlock();
+    // TODO felk: handle in python somehow, currently impossible to unsubscribe.
+    // TODO felk: documentation is currently wrong: it says only one can be registered (wrong) and you may register "None" to unregister (wrong)
+    // TODO felk: where state->ForgetActiveListenerID(listener_id)?
+    return Py_BuildValue("i", (*listener_id).value);
+  }
+  
   static void ScheduleCoroutine(PyObject* module, PyObject* coro)
   {
     PyInterpreterState* interpreter_state = PyThreadState_Get()->interp;
-    EventModuleState* state = Py::GetState<EventModuleState>(module);
+    EventModuleState* state = &eventState;
 
     Py_INCREF(module);
     Py_INCREF(coro);
@@ -217,11 +290,11 @@ struct PyEvent<MappingFunc<TEvent, TsArgs...>, TFunc>
       PyThreadState_Clear(thread_state);
       PyThreadState_DeleteCurrent();
 
-      state->ForgetActiveListenerID<TEvent>(*listener_id);
-      state->event_hub->UnlistenEvent(*listener_id);
+      eventState.ForgetActiveListenerID<TEvent>(*listener_id);
+      API::GetEventHub().UnlistenEvent(*listener_id);
     };
-    *listener_id = state->event_hub->ListenEvent<TEvent>(listener);
-    state->NoteActiveListenerID<TEvent>(*listener_id);
+    *listener_id = API::GetEventHub().ListenEvent<TEvent>(listener);
+    eventState.NoteActiveListenerID<TEvent>(*listener_id);
   }
   static void DecrefPyObjectsInArgs(const std::tuple<TsArgs...> args) {
     std::apply(
@@ -335,15 +408,15 @@ async def framedrawn():
   {
     ERROR_LOG_FMT(SCRIPTING, "Failed to load embedded python code into event module");
   }
-  API::EventHub* event_hub = PyScripting::PyScriptingBackend::GetCurrent()->GetEventHub();
-  state->event_hub = event_hub;
-  PyScripting::PyScriptingBackend::GetCurrent()->AddCleanupFunc([state] { state->Reset(); });
+  // API::EventHub* event_hub = PyScripting::PyScriptingBackend::GetCurrent()->GetEventHub();
+  // state->event_hub = event_hub;
+  PyScripting::PyScriptingBackend::GetCurrent()->AddCleanupFunc([state] { eventState.Reset(); });
 }
 
 static PyObject* Reset(PyObject* module)
 {
-  EventModuleState* state = Py::GetState<EventModuleState>(module);
-  state->Reset();
+  EventModuleState* state = &eventState;
+  eventState.Reset();
   Py_RETURN_NONE;
 }
 
@@ -364,6 +437,52 @@ PyMODINIT_FUNC PyInit_event()
       Py::MakeStatefulModuleDef<EventModuleState, SetupEventModule>("event", methods);
   PyObject* def_obj = PyModuleDef_Init(&module_def);
   return def_obj;
+}
+
+// PyMethodDef* getEventMethods() {
+//   static PyMethodDef methods[] = {
+//     // EVENT CALLBACKS
+//     // Has "on_"-prefix, let's python code register a callback
+//     Py::MakeMethodDef<PyFrameAdvanceEvent::AddCallback>("on_frameadvance"),
+//     Py::MakeMethodDef<PyMemoryBreakpointEvent::AddCallback>("on_memorybreakpoint"),
+//     Py::MakeMethodDef<PyCodeBreakpointEvent::AddCallback>("on_codebreakpoint"),
+//     Py::MakeMethodDef<PyFrameDrawnEvent::AddCallback>("on_framedrawn"),
+//     Py::MakeMethodDef<Reset>("_dolphin_reset"),
+
+//     {nullptr, nullptr, 0, nullptr}  // Sentinel
+//   };
+//   return methods;
+// }
+
+PyModuleDef* getEventModule() {
+  static PyMethodDef methods[] = {
+    // EVENT CALLBACKS
+    // Has "on_"-prefix, let's python code register a callback
+    Py::MakeMethodDef<PyFrameAdvanceEvent::AddCallback>("on_frameadvance"),
+    Py::MakeMethodDef<PyFrameAdvanceEvent::AddSingleUseCallback>("on_single_frameadvance"),
+    Py::MakeMethodDef<PyMemoryBreakpointEvent::AddCallback>("on_memorybreakpoint"),
+    Py::MakeMethodDef<PyMemoryBreakpointEvent::AddSingleUseCallback>("on_single_memorybreakpoint"),
+    Py::MakeMethodDef<PyCodeBreakpointEvent::AddCallback>("on_codebreakpoint"),
+    Py::MakeMethodDef<PyCodeBreakpointEvent::AddSingleUseCallback>("on_single_codebreakpoint"),
+    Py::MakeMethodDef<PyFrameDrawnEvent::AddCallback>("on_framedrawn"),
+    Py::MakeMethodDef<PyFrameDrawnEvent::AddSingleUseCallback>("on_single_framedrawn"),
+    Py::MakeMethodDef<Reset>("_dolphin_reset"),
+
+    {nullptr, nullptr, 0, nullptr}  // Sentinel
+  };
+  static PyModuleDef ControllerModule = {
+    PyModuleDef_HEAD_INIT,
+    "Event",
+    "Event",
+    -1,
+    methods,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr
+  };
+
+  return &ControllerModule;
 }
 
 }  // namespace PyScripting

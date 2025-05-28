@@ -128,4 +128,53 @@ PyMODINIT_FUNC PyInit_memory()
   return def_obj;
 }
 
+PyModuleDef* getMemoryModule() {
+  static PyMethodDef methods[] = {
+    {"add_memcheck", AddMemcheck, METH_VARARGS, ""},
+    {"remove_memcheck", RemoveMemcheck, METH_VARARGS, ""},
+
+    {"read_u8", Read<API::Memory::Read_U8>, METH_VARARGS, ""},
+    {"read_u16", Read<API::Memory::Read_U16>, METH_VARARGS, ""},
+    {"read_u32", Read<API::Memory::Read_U32>, METH_VARARGS, ""},
+    {"read_u64", Read<API::Memory::Read_U64>, METH_VARARGS, ""},
+
+    {"read_s8", Read<API::Memory::Read_S8>, METH_VARARGS, ""},
+    {"read_s16", Read<API::Memory::Read_S16>, METH_VARARGS, ""},
+    {"read_s32", Read<API::Memory::Read_S32>, METH_VARARGS, ""},
+    {"read_s64", Read<API::Memory::Read_S64>, METH_VARARGS, ""},
+
+    {"read_f32", Read<API::Memory::Read_F32>, METH_VARARGS, ""},
+    {"read_f64", Read<API::Memory::Read_F64>, METH_VARARGS, ""},
+
+    {"write_u8", Write<API::Memory::Write_U8, u8>, METH_VARARGS, ""},
+    {"write_u16", Write<API::Memory::Write_U16, u16>, METH_VARARGS, ""},
+    {"write_u32", Write<API::Memory::Write_U32, u32>, METH_VARARGS, ""},
+    {"write_u64", Write<API::Memory::Write_U64, u64>, METH_VARARGS, ""},
+
+    {"write_s8", Write<API::Memory::Write_S8, s8>, METH_VARARGS, ""},
+    {"write_s16", Write<API::Memory::Write_S16, s16>, METH_VARARGS, ""},
+    {"write_s32", Write<API::Memory::Write_S32, s32>, METH_VARARGS, ""},
+    {"write_s64", Write<API::Memory::Write_S64, s64>, METH_VARARGS, ""},
+
+    {"write_f32", Write<API::Memory::Write_F32, float>, METH_VARARGS, ""},
+    {"write_f64", Write<API::Memory::Write_F64, double>, METH_VARARGS, ""},
+
+    {nullptr, nullptr, 0, nullptr}  // Sentinel
+  };
+
+  static PyModuleDef MemoryModule = {
+    PyModuleDef_HEAD_INIT,
+    "Memory",
+    "Memory",
+    -1,
+    methods,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr
+  };
+
+  return &MemoryModule;
+}
+
 }  // namespace PyScripting

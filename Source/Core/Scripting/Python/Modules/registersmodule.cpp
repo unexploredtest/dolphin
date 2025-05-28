@@ -97,4 +97,28 @@ PyMODINIT_FUNC PyInit_registers()
   return def_obj;
 }
 
+PyModuleDef* getRegistersModule() {
+  static PyMethodDef methods[] = {
+    {"read_gpr", ReadGPR, METH_VARARGS, ""},
+    {"write_gpr", WriteGPR, METH_VARARGS, ""},
+    {"read_fpr", ReadFPR, METH_VARARGS, ""},
+    {"write_fpr", WriteFPR, METH_VARARGS, ""},
+    {nullptr, nullptr, 0, nullptr}  // Sentinel
+  };
+
+  static PyModuleDef RegistersModule = {
+    PyModuleDef_HEAD_INIT,
+    "Registers",
+    "Registers",
+    -1,
+    methods,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr
+  };
+
+  return &RegistersModule;
+}
+
 }  // namespace PyScripting

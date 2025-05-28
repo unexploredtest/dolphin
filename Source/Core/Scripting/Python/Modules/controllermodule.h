@@ -8,6 +8,9 @@
 
 namespace PyScripting
 {
+    // PyObject* set_gc_buttons(PyObject* module, PyObject* args);
+    // PyObject* get_gc_buttons(PyObject* module, PyObject* args);
 PyMODINIT_FUNC PyInit_controller();
+PyModuleDef* getControllerModule();
 
 }  // namespace PyScripting

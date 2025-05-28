@@ -6,6 +6,7 @@
 
 #include "Common/Logging/Log.h"
 #include "Core/State.h"
+#include "Core/System.h"
 #include "Scripting/Python/Utils/module.h"
 #include <Scripting/Python/PyScriptingBackend.h>
 
@@ -29,7 +30,7 @@ static PyObject* SaveToSlot(PyObject* self, PyObject* args)
     PyErr_SetString(PyExc_ValueError, "slot number must be between 0 and 99");
     return nullptr;
   }
-  State::Save(*state->system, slot);
+  State::Save(Core::System::GetInstance(), slot);
   Py_RETURN_NONE;
 }
 
@@ -45,7 +46,7 @@ static PyObject* LoadFromSlot(PyObject* self, PyObject* args)
     PyErr_SetString(PyExc_ValueError, "slot number must be between 0 and 99");
     return nullptr;
   }
-  State::Load(*state->system, slot);
+  State::Load(Core::System::GetInstance(), slot);
   Py_RETURN_NONE;
 }
 
@@ -56,7 +57,7 @@ static PyObject* SaveToFile(PyObject* self, PyObject* args)
   if (!filename_opt.has_value())
     return nullptr;
   const char* filename = std::get<0>(filename_opt.value());
-  State::SaveAs(*state->system, std::string(filename));
+  State::SaveAs(Core::System::GetInstance(), std::string(filename));
   Py_RETURN_NONE;
 }
 
@@ -67,7 +68,7 @@ static PyObject* LoadFromFile(PyObject* self, PyObject* args)
   if (!filename_opt.has_value())
     return nullptr;
   const char* filename = std::get<0>(filename_opt.value());
-  State::LoadAs(*state->system, std::string(filename));
+  State::LoadAs(Core::System::GetInstance(), std::string(filename));
   Py_RETURN_NONE;
 }
 
@@ -75,7 +76,7 @@ static PyObject* SaveToBytes(PyObject* self, PyObject* args)
 {
   SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
   std::vector<u8> buffer;
-  State::SaveToBuffer(*state->system, buffer);
+  State::SaveToBuffer(Core::System::GetInstance(), buffer);
   const u8* data = buffer.data();
   PyObject* pybytes = PyBytes_FromStringAndSize(reinterpret_cast<const char*>(data), buffer.size());
   if (pybytes == nullptr)
@@ -102,7 +103,7 @@ static PyObject* LoadFromBytes(PyObject* self, PyObject* args)
     return nullptr;
   // I don't understand where and why the buffer gets copied and why this is necessary...
   buffer.assign(data, data+length);
-  State::LoadFromBuffer(*state->system, buffer);
+  State::LoadFromBuffer(Core::System::GetInstance(), buffer);
   Py_RETURN_NONE;
 }
 
@@ -128,6 +129,33 @@ PyMODINIT_FUNC PyInit_savestate()
       Py::MakeStatefulModuleDef<SavestateModuleState, SetupSavestateModule>("savestate", methods);
   PyObject* def_obj = PyModuleDef_Init(&module_def);
   return def_obj;
+}
+
+PyModuleDef* getSaveStateModule() {
+  static PyMethodDef methods[] = {
+    {"save_to_slot", SaveToSlot, METH_VARARGS, ""},
+    {"save_to_file", SaveToFile, METH_VARARGS, ""},
+    {"save_to_bytes", SaveToBytes, METH_NOARGS, ""},
+    {"load_from_slot", LoadFromSlot, METH_VARARGS, ""},
+    {"load_from_file", LoadFromFile, METH_VARARGS, ""},
+    {"load_from_bytes", LoadFromBytes, METH_VARARGS, ""},
+
+    {nullptr, nullptr, 0, nullptr}  // Sentinel
+  };
+
+  static PyModuleDef saveStateModule = {
+    PyModuleDef_HEAD_INIT,
+    "Save State",
+    "Save State",
+    -1,
+    methods,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr
+  };
+
+  return &saveStateModule;
 }
 
 }  // namespace PyScripting

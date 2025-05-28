@@ -10,5 +10,6 @@ namespace PyScripting
 {
 
 PyMODINIT_FUNC PyInit_registers();
+PyModuleDef* getRegistersModule();
 
 }

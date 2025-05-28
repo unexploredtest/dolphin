@@ -21,12 +21,12 @@ struct EmulationModuleState
 
 static PyObject* EmulationReset(PyObject* self)
 {
-  EmulationModuleState* state = Py::GetState<EmulationModuleState>(self);
+  // EmulationModuleState* state = Py::GetState<EmulationModuleState>(self);
   // Copy from DolphinQt/MainWindow.cpp: MainWindow::Reset()
-  auto& movie = state->system->GetMovie();
+  auto& movie = Core::System::GetInstance().GetMovie();
   if (movie.IsRecordingInput())
     movie.SetReset(true);
-  state->system->GetProcessorInterface().ResetButton_Tap();
+    Core::System::GetInstance().GetProcessorInterface().ResetButton_Tap();
   Py_RETURN_NONE;
 }
 
@@ -48,5 +48,27 @@ PyMODINIT_FUNC PyInit_emulation()
   PyObject* def_obj = PyModuleDef_Init(&module_def);
   return def_obj;
 }
+
+PyModuleDef* getEmulationModule() {
+  static PyMethodDef methods[] = {
+    Py::MakeMethodDef<EmulationReset>("reset"),
+
+    {nullptr, nullptr, 0, nullptr}  // Sentinel
+  };
+  static PyModuleDef emulationModule = {
+    PyModuleDef_HEAD_INIT,
+    "Emulation",
+    "Emulation",
+    -1,
+    methods,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr
+  };
+
+  return &emulationModule;
+}
+
 
 }  // namespace PyScripting
