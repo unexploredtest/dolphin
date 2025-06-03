@@ -71,6 +71,8 @@ PyMODINIT_FUNC PyInit_emulation()
 
 PyModuleDef* getEmulationModule() {
   static PyMethodDef methods[] = {
+    Py::MakeMethodDef<EmulationResume>("resume"),
+    Py::MakeMethodDef<EmulationPause>("pause"),
     Py::MakeMethodDef<EmulationReset>("reset"),
 
     {nullptr, nullptr, 0, nullptr}  // Sentinel
