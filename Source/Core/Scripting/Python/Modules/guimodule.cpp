@@ -101,7 +101,7 @@ static void draw_circle_filled(PyObject* self, float centerX, float centerY, flo
 static void draw_text(PyObject* self, float posX, float posY, u32 color, const char* text)
 {
   // GuiModuleState* state = Py::GetState<GuiModuleState>(self);
-  API::GetGui().DrawText({posX, posY}, color, std::string(text));
+  API::GetGui().DrawText2({posX, posY}, color, std::string(text));
 }
 
 static PyObject* draw_polyline(PyObject* self, PyObject* args)

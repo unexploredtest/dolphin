@@ -20,7 +20,7 @@ struct SavestateModuleState
 
 static PyObject* SaveToSlot(PyObject* self, PyObject* args)
 {
-  SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
+  // SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
   auto slot_opt = Py::ParseTuple<u32>(args);
   if (!slot_opt.has_value())
     return nullptr;
@@ -36,7 +36,7 @@ static PyObject* SaveToSlot(PyObject* self, PyObject* args)
 
 static PyObject* LoadFromSlot(PyObject* self, PyObject* args)
 {
-  SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
+  // SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
   auto slot_opt = Py::ParseTuple<u32>(args);
   if (!slot_opt.has_value())
     return nullptr;
@@ -52,7 +52,7 @@ static PyObject* LoadFromSlot(PyObject* self, PyObject* args)
 
 static PyObject* SaveToFile(PyObject* self, PyObject* args)
 {
-  SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
+  // SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
   auto filename_opt = Py::ParseTuple<const char*>(args);
   if (!filename_opt.has_value())
     return nullptr;
@@ -63,7 +63,7 @@ static PyObject* SaveToFile(PyObject* self, PyObject* args)
 
 static PyObject* LoadFromFile(PyObject* self, PyObject* args)
 {
-  SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
+  // SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
   auto filename_opt = Py::ParseTuple<const char*>(args);
   if (!filename_opt.has_value())
     return nullptr;
@@ -74,7 +74,7 @@ static PyObject* LoadFromFile(PyObject* self, PyObject* args)
 
 static PyObject* SaveToBytes(PyObject* self, PyObject* args)
 {
-  SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
+  // SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
   std::vector<u8> buffer;
   State::SaveToBuffer(Core::System::GetInstance(), buffer);
   const u8* data = buffer.data();
@@ -89,7 +89,7 @@ static PyObject* SaveToBytes(PyObject* self, PyObject* args)
 
 static PyObject* LoadFromBytes(PyObject* self, PyObject* args)
 {
-  SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
+  // SavestateModuleState* state = Py::GetState<SavestateModuleState>(self);
   auto bytes_opt = Py::ParseTuple<PyBytesObject*>(args);
   if (!bytes_opt.has_value())
     return nullptr;

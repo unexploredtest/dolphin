@@ -152,7 +152,7 @@ struct PyEvent<MappingFunc<TEvent, TsArgs...>, TFunc>
       PyErr_SetString(PyExc_TypeError, "event callback must be callable");
       return nullptr;
     }
-    EventModuleState* state = &eventState;
+    // EventModuleState* state = &eventState;
     PyInterpreterState* interpreter_state = PyThreadState_Get()->interp;
     Py_INCREF(module);       // TODO felk: where DECREF?
     Py_INCREF(newCallback);  // TODO felk: where DECREF?
@@ -205,7 +205,7 @@ struct PyEvent<MappingFunc<TEvent, TsArgs...>, TFunc>
       PyErr_SetString(PyExc_TypeError, "event callback must be callable");
       return nullptr;
     }
-    EventModuleState* state = &eventState;
+    // EventModuleState* state = &eventState;
     PyInterpreterState* interpreter_state = PyThreadState_Get()->interp;
     Py_INCREF(module);       // TODO felk: where DECREF?
     Py_INCREF(newCallback);  // TODO felk: where DECREF?
@@ -259,7 +259,7 @@ struct PyEvent<MappingFunc<TEvent, TsArgs...>, TFunc>
   static void ScheduleCoroutine(PyObject* module, PyObject* coro)
   {
     PyInterpreterState* interpreter_state = PyThreadState_Get()->interp;
-    EventModuleState* state = &eventState;
+    // EventModuleState* state = &eventState;
 
     Py_INCREF(module);
     Py_INCREF(coro);
@@ -415,7 +415,7 @@ async def framedrawn():
 
 static PyObject* Reset(PyObject* module)
 {
-  EventModuleState* state = &eventState;
+  // EventModuleState* state = &eventState;
   eventState.Reset();
   Py_RETURN_NONE;
 }
