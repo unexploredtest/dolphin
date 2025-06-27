@@ -1,0 +1,27 @@
+name: Build Mac OS Wheel
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Build Wheel
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DSKIP_POSTPROCESS_BUNDLE=ON
+          make -j$(sysctl -n hw.logicalcpu)
+          tar -czf dolphin_mac.tar.gz Binaries/
+
+      - name: Upload Dolphin Mac
+        uses: actions/upload-artifact@v4
+        with:
+          name: DolphinMac
+          path: dolphin_mac.tar.gz
