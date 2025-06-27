@@ -12,7 +12,12 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Build Wheel
+      - name: Install Qt
+        run: |
+          brew update
+          brew install qt
+
+      - name: Build Dolphin
         run: |
           mkdir build
           cd build
