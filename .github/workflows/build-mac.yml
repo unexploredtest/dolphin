@@ -21,7 +21,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DSKIP_POSTPROCESS_BUNDLE=ON
+          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.6
           make -j$(sysctl -n hw.logicalcpu)
           tar -czf dolphin_mac.tar.gz Binaries/
 
