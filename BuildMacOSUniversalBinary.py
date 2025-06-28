@@ -338,7 +338,7 @@ def build(config):
     
     if config["autoupdate"]:
         subprocess.check_call([
-            "../Tools/mac-codesign.sh",
+            "./Tools/mac-codesign.sh",
             "-t",
             "-e", "preserve",
             config["codesign_identity"],
