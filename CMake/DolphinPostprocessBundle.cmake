@@ -38,7 +38,7 @@ function(message)
 	if(NOT ARGV MATCHES "^STATUS;")
 		_message(${ARGV})
 	endif()
-endfunction()DOLPHIN_BUNDLE_PATH
+endfunction()
 include(BundleUtilities)
 set(BU_CHMOD_BUNDLE_ITEMS ON)
 # fixup_bundle("${DOLPHIN_BUNDLE_PATH}" "${extra_libs}" "${extra_dirs}")
