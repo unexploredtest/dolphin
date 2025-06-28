@@ -36,4 +36,4 @@ set(extra_dirs "/usr/local/lib" "/lib" "/usr/lib")
 # BundleUtilities is overly verbose, so disable most of its messages
 include(BundleUtilities)
 set(BU_CHMOD_BUNDLE_ITEMS ON)
-fixup_bundle("${DOLPHIN_BUNDLE_PATH}" "${extra_libs}" "${extra_dirs}")
+fixup_bundle("${DOLPHIN_BUNDLE_PATH}" "${extra_libs}" "${extra_dirs}" IGNORE_ITEM Python)
