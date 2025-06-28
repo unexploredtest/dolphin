@@ -345,7 +345,7 @@ def build(config):
             dst_app+"/Dolphin.app/Contents/Helpers/Dolphin Updater.app"])
 
     subprocess.check_call([
-        "../Tools/mac-codesign.sh",
+        "./Tools/mac-codesign.sh",
         "-t",
         "-e", "preserve",
         config["codesign_identity"],
