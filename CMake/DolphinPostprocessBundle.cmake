@@ -38,8 +38,8 @@ function(message)
 	if(NOT ARGV MATCHES "^STATUS;")
 		_message(${ARGV})
 	endif()
-endfunction()
-
+endfunction()DOLPHIN_BUNDLE_PATH
 include(BundleUtilities)
 set(BU_CHMOD_BUNDLE_ITEMS ON)
-fixup_bundle("${DOLPHIN_BUNDLE_PATH}" "${extra_libs}" "${extra_dirs}")
+# fixup_bundle("${DOLPHIN_BUNDLE_PATH}" "${extra_libs}" "${extra_dirs}")
+copy_and_fixup_bundle("${DOLPHIN_BUNDLE_PATH}" "${DOLPHIN_BUNDLE_PATH}/../new.app" "${extra_libs}" "${extra_dirs}")
