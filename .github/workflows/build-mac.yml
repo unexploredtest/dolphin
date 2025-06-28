@@ -17,11 +17,22 @@ jobs:
           brew update
           brew install qt
 
-      - name: Build Dolphin
+      - name: Configure Dolphin
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.6 -DENABLE_AUTOUPDATE=OFF
+          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_AUTOUPDATE=OFF
+          tar -czf dolphin_mac.tar.gz Binaries/
+
+      - name: Try Building Dolphin
+        run: |
+          cd build
+          make -j$(sysctl -n hw.logicalcpu)
+        continue-on-error: true
+
+      - name: Try Building Dolphin Again
+        run: |
+          cd build
           make -j$(sysctl -n hw.logicalcpu)
           tar -czf dolphin_mac.tar.gz Binaries/
 
