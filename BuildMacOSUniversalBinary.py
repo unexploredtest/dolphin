@@ -71,7 +71,7 @@ DEFAULT_CONFIG = {
     "run_unit_tests": False,
 
     # Whether our autoupdate functionality is enabled or not.
-    "autoupdate": True,
+    "autoupdate": False,
 
     # The distributor for this build.
     "distributor": "None"
@@ -83,7 +83,7 @@ DEFAULT_CONFIG = {
 # 2) Single architecture builds should utilize the normal generated cmake
 #    project files rather than this wrapper script
 
-ARCHITECTURES = ["x86_64", "arm64"]
+ARCHITECTURES = ["arm64"]
 
 
 def parse_args(conf=DEFAULT_CONFIG):
