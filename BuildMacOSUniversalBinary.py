@@ -287,7 +287,7 @@ def build(config):
                 ignore_path = config[a+"_cmake_prefix"]
 
         subprocess.check_call([
-                "cmake", "../../", "-G", config["generator"],
+                "cmake", "..", "-G", config["generator"],
                 "-DCMAKE_BUILD_TYPE=" + config["build_type"],
                 '-DCMAKE_CXX_FLAGS="-DMACOS_UNIVERSAL_BUILD=1"',
                 '-DCMAKE_C_FLAGS="-DMACOS_UNIVERSAL_BUILD=1"',

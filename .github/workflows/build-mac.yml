@@ -19,13 +19,11 @@ jobs:
 
       - name: Try Building Dolphin
         run: |
-          cd dolphin
           python3 BuildMacOSUniversalBinary.py
         continue-on-error: true
 
       - name: Try Building Dolphin Again
         run: |
-          cd dolphin
           python3 BuildMacOSUniversalBinary.py
           tar -czf dolphin_mac.tar.gz arm64/Binaries
 
