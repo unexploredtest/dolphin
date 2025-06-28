@@ -34,11 +34,6 @@ file(GLOB_RECURSE extra_libs "${DOLPHIN_BUNDLE_PATH}/Contents/MacOS/*.dylib")
 set(extra_dirs "/usr/local/lib" "/lib" "/usr/lib")
 
 # BundleUtilities is overly verbose, so disable most of its messages
-function(message)
-	if(NOT ARGV MATCHES "^STATUS;")
-		_message(${ARGV})
-	endif()
-endfunction()
 include(BundleUtilities)
 set(BU_CHMOD_BUNDLE_ITEMS ON)
 fixup_bundle("${DOLPHIN_BUNDLE_PATH}" "${extra_libs}" "${extra_dirs}")
