@@ -21,7 +21,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_AUTOUPDATE=OFF
+          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_AUTOUPDATE=OFF -DMACOS_CODE_SIGNING=OFF
           tar -czf dolphin_mac.tar.gz Binaries/
 
       - name: Try Building Dolphin
