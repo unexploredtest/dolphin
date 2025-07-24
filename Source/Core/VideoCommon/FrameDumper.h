@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "Common/CommonTypes.h"
 #include "Common/Event.h"
 #include "Common/Flag.h"
