@@ -90,7 +90,8 @@ jobs:
       - name: Build Dolphin
         run: |
           # On Ubuntu some include files are missing for Qt6, we copy those manually
-          sudo cp -r Externals/Qt/Qt6.5.1/x64/include/QtGui/6.5.1/QtGui/qpa/ /usr/include/qt6/QtGui/
+          # Hacky, but it works anyways
+          sudo cp -r Externals/Qt/Qt6.5.1/x64/include/QtGui/6.5.1/QtGui/qpa/ /usr/include/
           cmake -Bbuild . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DUSE_SYSTEM_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cd build
           make -j$(nproc)
