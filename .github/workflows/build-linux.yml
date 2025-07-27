@@ -124,5 +124,5 @@ jobs:
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: appimage
+          name: dolphin-${{ matrix.python-version }}
           path: build/*.AppImage
