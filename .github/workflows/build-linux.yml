@@ -96,9 +96,10 @@ jobs:
           cd build
           make -j$(nproc)
           cp -r ../Data/Sys/ Binaries/
+          tar -czf dolphin_linux.tar.gz Binaries/
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: dolphin-${{ matrix.python-version }}
-          path: build/Binaries
+          name: DolphinLinux
+          path: build/dolphin_linux.tar.gz
