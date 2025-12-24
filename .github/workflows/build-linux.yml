@@ -4,7 +4,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -78,14 +78,6 @@ jobs:
           sudo apt install libxcb-xkb-dev
           sudo apt install libxkbcommon-dev
           sudo apt install libxkbcommon-x11-dev
-
-      - name: Setup gcc 12
-        run: |
-          sudo apt install g++-12 gcc-12
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
-          sudo update-alternatives --config gcc
-          sudo update-alternatives --config g++
 
       - name: Build Dolphin
         run: |
