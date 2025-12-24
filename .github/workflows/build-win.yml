@@ -12,11 +12,6 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.13
-
       - name: Build Dolphin
         run: |
           cmake -Bbuild . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release
