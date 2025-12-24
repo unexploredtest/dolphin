@@ -90,7 +90,7 @@ jobs:
           cp -r ../Data/Sys/ Binaries/
           tar -czf dolphin_linux.tar.gz Binaries/
 
-      - name: Upload AppImage
+      - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
           name: DolphinLinux

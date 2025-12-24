@@ -45,7 +45,7 @@ jobs:
           make -j$(sysctl -n hw.logicalcpu)
           tar -czf dolphin_mac.tar.gz Binaries/
 
-      - name: Upload Dolphin Mac
+      - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
           name: DolphinMac-${{ matrix.arch }}
