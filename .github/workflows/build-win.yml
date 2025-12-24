@@ -23,8 +23,8 @@ jobs:
           cmake --build build --config Release -- /m
           ls
 
-      - name: Upload Dolphin
+      - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
           name: DolphinWin
-          path: build/x64
+          path: Binary
