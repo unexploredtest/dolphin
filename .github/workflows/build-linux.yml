@@ -1,4 +1,4 @@
-name: Build Dolphin Appimage
+name: Build Linux Dolphin
 
 on: [push, workflow_dispatch]
 

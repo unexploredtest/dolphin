@@ -1,4 +1,4 @@
-name: Build Mac OS Wheel
+name: Build Mac OS Dolphin
 
 on: [push, workflow_dispatch]
 
@@ -11,8 +11,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - runs-on: macos-13
-            arch: x86_64
           - runs-on: macos-latest
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
