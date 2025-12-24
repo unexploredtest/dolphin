@@ -1,0 +1,31 @@
+name: Build Dolphin Appimage
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.13
+
+      - name: Build Dolphin
+        run: |
+          cmake -Bbuild . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release
+          cd build
+          make -j$(nproc)
+          ls
+
+      - name: Upload Dolphin
+        uses: actions/upload-artifact@v4
+        with:
+          name: DolphinWin
+          path: build
