@@ -30,7 +30,7 @@ add_library(scripting
   Python/Utils/object_wrapper.h
 )
 
-find_package(Python3 REQUIRED COMPONENTS Development)
+find_package(Python3 REQUIRED 3.12 COMPONENTS Development)
 include_directories(${Python3_INCLUDE_DIRS})
 # TODO imgui shouldn't be here
 target_link_libraries(scripting PRIVATE ${Python3_LIBRARIES} imgui core)
