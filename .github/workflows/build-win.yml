@@ -23,13 +23,7 @@ jobs:
 
       - name: Build Dolphin
         run: |
-          cmake -Bbuild . \
-            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DPython3_ROOT="%PYTHON_ROOT%" \
-            -DPython3_EXECUTABLE="%PYTHON_ROOT%\\python.exe" \
-            -DPython3_LIBRARY="%PYTHON_ROOT%\\libs\\python3.lib" \
-            -DPython3_INCLUDE_DIR="%PYTHON_ROOT%\\include"
+          cmake -Bbuild . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DPython3_ROOT="%PYTHON_ROOT%" -DPython3_EXECUTABLE="%PYTHON_ROOT%\\python.exe" -DPython3_LIBRARY="%PYTHON_ROOT%\\libs\\python3.lib" \ -DPython3_INCLUDE_DIR="%PYTHON_ROOT%\\include"
           cmake --build build --config Release -- /m
 
       - name: Upload Build
