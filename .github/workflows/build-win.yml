@@ -21,7 +21,7 @@ jobs:
         run: |
           cmake -Bbuild . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -- /m
-          ls build
+          ls
 
       - name: Upload Dolphin
         uses: actions/upload-artifact@v4
