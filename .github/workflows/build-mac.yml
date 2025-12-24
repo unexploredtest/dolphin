@@ -1,0 +1,52 @@
+name: Build Mac OS Dolphin
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    name: "${{ matrix.runs-on }} • ${{ matrix.arch }}"
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        include:
+          - runs-on: macos-latest
+            arch: arm64
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Install Qt
+        run: |
+          brew update
+          brew install qt
+
+      - name: Configure Dolphin
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_AUTOUPDATE=OFF
+          tar -czf dolphin_mac.tar.gz Binaries/
+
+      - name: Try Building Dolphin
+        run: |
+          cd build
+          make -j$(sysctl -n hw.logicalcpu)
+        continue-on-error: true
+
+      - name: Try Building Dolphin Again
+        run: |
+          cd build
+          make -j$(sysctl -n hw.logicalcpu)
+          tar -czf dolphin_mac.tar.gz Binaries/
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: DolphinMac-${{ matrix.arch }}
+          path: build/dolphin_mac.tar.gz
