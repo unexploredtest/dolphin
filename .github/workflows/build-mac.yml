@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
@@ -46,7 +46,7 @@ jobs:
           tar -czf dolphin_mac.tar.gz Binaries/
 
       - name: Upload Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DolphinMac-${{ matrix.arch }}
           path: build/dolphin_mac.tar.gz

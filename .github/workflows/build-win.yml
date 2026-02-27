@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
@@ -23,7 +23,7 @@ jobs:
           cmake --build build --config Release -- /m
 
       - name: Upload Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DolphinWin
           path: Binary
