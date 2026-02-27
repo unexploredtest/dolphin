@@ -18,20 +18,25 @@ jobs:
     strategy:
       matrix:
         include:
-          - runs-on: macos-latest
+          - runs-on: macos-15
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
 
       - name: Install Qt
         run: |
           brew update
-          brew install qt
+          # Creating a new tap to install an older version of qt (the newer ones have build issues), for now 6.9.3.
+          # To grab a different version, change the git hash below
+          brew tap-new workflow/homebrew-custom
+          curl -o /tmp/qt.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/63d2e0609cdc80b0b96472721f9adf55bd74696b/Formula/q/qt.rb
+          mv /tmp/qt.rb $(brew --repo workflow/homebrew-custom)/Formula/qt.rb
+          brew install workflow/custom/qt
 
       - name: Configure Dolphin
         run: |
@@ -53,7 +58,7 @@ jobs:
           tar -czf dolphin_mac.tar.gz Binaries/
 
       - name: Upload Build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DolphinMac-${{ matrix.arch }}
           path: build/dolphin_mac.tar.gz
