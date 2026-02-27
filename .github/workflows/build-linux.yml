@@ -82,7 +82,7 @@ jobs:
           # On Ubuntu some include files are missing for Qt6, we copy those manually
           # Hacky, but it works anyways
           sudo cp -r Externals/Qt/Qt6.5.1/x64/include/QtGui/6.5.1/QtGui/qpa/ /usr/include/
-          cmake -Bbuild . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DUSE_SYSTEM_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake -Bbuild . -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DLINUX_LOCAL_DEV=true -DUSE_SYSTEM_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
           cd build
           make -j$(nproc)
           cp -r ../Data/Sys/ Binaries/
@@ -91,4 +91,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: DolphinLinux
-          path: Binaries
+          path: build/Binaries

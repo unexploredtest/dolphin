@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - runs-on: macos-latest
+          - runs-on: macos-15
             arch: arm64
     runs-on: ${{ matrix.runs-on }}
 
@@ -24,7 +24,7 @@ jobs:
       - name: Install Qt
         run: |
           brew update
-          brew install qt
+          brew install qt@6.9
 
       - name: Configure Dolphin
         run: |
