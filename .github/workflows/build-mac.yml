@@ -31,12 +31,7 @@ jobs:
       - name: Install Qt
         run: |
           brew update
-          # Creating a new tap to install an older version of qt (the newer ones have build issues), for now 6.9.3.
-          # To grab a different version, change the git hash below
-          brew tap-new workflow/homebrew-custom
-          curl -o /tmp/qt.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/63d2e0609cdc80b0b96472721f9adf55bd74696b/Formula/q/qt.rb
-          mv /tmp/qt.rb $(brew --repo workflow/homebrew-custom)/Formula/qt.rb
-          brew install workflow/custom/qt
+          brew install qt
 
       - name: Configure Dolphin
         run: |
