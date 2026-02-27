@@ -24,7 +24,9 @@ jobs:
       - name: Install Qt
         run: |
           brew update
-          brew install qt@6.9
+          # https://stackoverflow.com/questions/39187812/how-to-install-older-versions-using-homebrew#comment123859218_69832222
+          curl https://raw.githubusercontent.com/Homebrew/homebrew-core/63d2e0609cdc80b0b96472721f9adf55bd74696b/Formula/q/qt.rb > $(find $(brew --repository) -name qt.rb)
+          brew reinstall qt
 
       - name: Configure Dolphin
         run: |
